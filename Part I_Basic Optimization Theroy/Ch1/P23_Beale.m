@@ -9,3 +9,5 @@ for i = 1 : 5
     Hx = H(x);
     x = x - Hx^(-1)*df;
 end
+
+% Saddle point
