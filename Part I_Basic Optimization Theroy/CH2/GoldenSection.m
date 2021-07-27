@@ -1,20 +1,14 @@
-function [x, minf, iter] = GoldenSection(a, b, f, epsilon)
+function [x, minf, iter] = GoldenSection(a, b, f, epsilon, k)
 % This function using golden search method to find the minima minf of 
 % function f with the initial guess a and b (a < b). x is the solution within 
 % the prescribed accuracy epsilon and iter is the number of iterations used.
 
 % k: the maximum the number of iterations
 
-if epsilon >= 1
-    % When epsilon is an integer larger than 1, it means the maximum number
-    % of iterations.
-    k = epsilon;
-    epsilon = 10^(-8);
-    
+if nargin < 5
+    k = 10000;
 else
-    % epsilon is the tolerance, give k a large number
-    k = 1000000;
-    
+    epsilon = 10^(-6);
 end
 
 r = (sqrt(5) - 1)/2;    % the golden ratio
