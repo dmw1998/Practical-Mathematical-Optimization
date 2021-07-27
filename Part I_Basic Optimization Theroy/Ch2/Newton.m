@@ -23,4 +23,7 @@ while abs(f0 - f1) > epsilon
     
 end
 
+x = x1;
+minf = f1;
+
 end
