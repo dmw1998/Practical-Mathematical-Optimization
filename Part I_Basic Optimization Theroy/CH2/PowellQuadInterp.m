@@ -39,23 +39,33 @@ end
 while true
 
     while true
+        
+        d_set = abs(lambda_set - lambda_m);
+        [dmin, index1] = min(d_set);
+        lambda_n = lambda_set(index1);
 
         %% Step 4
         if is_min && abs(lambda_m - lambda_n) > H        % lambda_m is a minimum and |lambda_m - lambda_n| > H
                                                         % F012 can never zero
-            [dmax, index2] = max(d0, d1, d2);
+            [dmax, index2] = max(d_set);
             lambda_set(index2) = [];        % Discard the furthest point from lambda_m
 
-            % Find the lowest value in direction of descent
-            % Take a step of size H from the point
-            % Back to Step 3 
+            % Take a step of size H from the point with the lowest value in direction of descent
+            if f(lambda_set(1)) > f(lambda_set(2))
+                lambda_set(3) = lambda_set(2) + H;
+            else
+                lambda_set = [lambda_set(1) - H, lambda_set];
+            end 
 
         elseif ~is_min   % lambda_m is a maximum
             lambda_set(index1) = [];        % Discard the nearest point to lambda_m
 
-            % Find the lowest value in direction of descent
-            % Take a step of size H from the point
-            % Back to Step 3 
+            % Take a step of size H from the point with the lowest value in direction of descent
+            if f(lambda_set(1)) > f(lambda_set(2))
+                lambda_set(3) = lambda_set(2) + H;
+            else
+                lambda_set = [lambda_set(1) - H, lambda_set];
+            end 
 
         else
             break
@@ -63,7 +73,7 @@ while true
         
         iter = iter + 1;
 
-        %% Step 3
+        %% Back to Step 3
         [lambda_m, is_min] = step3(lambda_set, f);
 
     end
@@ -72,7 +82,14 @@ while true
     if abs(lambda_m - lambda_n) < epsilon
         Fm = f(lambda_m);
         Fn = f(lambda_n);
-        minf = min(Fm, Fn);
+        [minf, index4] = min([Fm, Fn]);
+        
+        if index4 == 1
+            x = lambda_m;
+        else
+            x = lambda_n;
+        end
+        
         return
     end
 
@@ -93,14 +110,14 @@ end
 
 function [lambda_m, is_min] = step3(lambda_set, f)
     % Compute turning point lambda_m
-    F0 = f(lambda_set(0));
-    F1 = f(lambda_set(1));
-    F2 = f(lambda_set(2));
+    F0 = f(lambda_set(1));
+    F1 = f(lambda_set(2));
+    F2 = f(lambda_set(3));
 
-    F01 = F0/(lambda_set(0) - lambda_set(1)) + F1/(lambda_set(1) - lambda_set(0));
-    F012 = F0/((lambda_set(0) - lambda_set(1))*(lambda_set(0) - lambda_set(2)))...
-         + F1/((lambda_set(1) - lambda_set(0))*(lambda_set(1) - lambda_set(2)))...
-         + F2/((lambda_set(2) - lambda_set(0))*(lambda_set(2) - lambda_set(1)));
+    F01 = F0/(lambda_set(1) - lambda_set(2)) + F1/(lambda_set(2) - lambda_set(1));
+    F012 = F0/((lambda_set(1) - lambda_set(2))*(lambda_set(1) - lambda_set(3)))...
+         + F1/((lambda_set(2) - lambda_set(1))*(lambda_set(2) - lambda_set(3)))...
+         + F2/((lambda_set(3) - lambda_set(1))*(lambda_set(3) - lambda_set(2)));
 
     lambda_m = (F012*(2*lambda_set(1)) - F01)/(2*F012);
 
